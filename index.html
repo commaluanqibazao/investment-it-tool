@@ -214,7 +214,7 @@
 <body>
 <div class="gh-banner" id="ghBanner">
   ⚠️ GitHub Pages 预览页 — 请使用
-  <a href="http://1.14.77.3/it/">http://1.14.77.3/it/</a> 访问完整功能
+  <a href="https://1.14.77.3.nip.io/">https://1.14.77.3.nip.io/</a> 访问完整功能
 </div>
 
 <div class="app initial" id="app">
@@ -289,15 +289,18 @@
 // ============================================================
 // 检测运行环境
 const ON_GHPAGES = window.location.hostname.includes('github.io');
-// 服务器上路径是/it/，API需要加上/it前缀
-const API_SERVER = ON_GHPAGES ? 'http://1.14.77.3/it' : '/it';
+const API_SERVER = ON_GHPAGES
+  ? 'https://1.14.77.3.nip.io'   // GitHub Pages → HTTPS服务器（首次需接受自签名证书）
+  : window.location.protocol === 'https:'
+    ? ''                         // 服务器HTTPS同源
+    : '/it';                     // 服务器HTTP同源
 
 if (ON_GHPAGES) {
   document.getElementById('ghBanner').style.display = 'block';
   document.querySelector('.gh-banner').innerHTML =
     '⚠️ 当前为 GitHub Pages 预览页 — ' +
-    '<a href="http://1.14.77.3/it/">点击访问完整功能页面</a>';
-  setTimeout(() => { window.location.href = 'http://1.14.77.3/it/'; }, 5000);
+    '<a href="https://1.14.77.3.nip.io/">点击访问完整功能页面</a>';
+  setTimeout(() => { window.location.href = 'https://1.14.77.3.nip.io/'; }, 5000);
 }
 
 // ============================================================
