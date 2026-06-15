@@ -342,7 +342,17 @@ async function callAgent(text) {
   });
   if (!resp.ok) {
     const err = await resp.json().catch(()=>({}));
-    throw new Error(err.detail || err.error || `请求失败 (${resp.status})`);
+    // 语义分析错误类型
+    const status = resp.status;
+    const detail = err.detail || err.error || '';
+    let msg = '';
+    if (status === 404) msg = 'API路径错误，请联系管理员';
+    else if (status === 502) msg = '后端服务暂时不可用，请稍后重试';
+    else if (status === 500) msg = detail.includes('timeout') ? '系统分析超时，请简化您的需求后重试' : '服务内部错误，请稍后重试';
+    else if (detail.includes('Failed to fetch') || detail.includes('NetworkError')) msg = '网络连接失败，请检查服务器是否正常运行';
+    else if (detail.includes('Authentication Fails')) msg = 'API密钥配置错误，请联系管理员';
+    else msg = `系统暂无法处理（${status}），请稍后重试`;
+    throw new Error(msg);
   }
   return (await resp.json()).report;
 }
@@ -440,7 +450,7 @@ async function doSend(rawText) {
     renderDoc(currentDoc);
   } catch (err) {
     removeTyping(typingId);
-    addMsg('⚠️ 报告生成失败：' + err.message,'assistant',true);
+    addMsg('⚠️ ' + err.message,'assistant',true);
   }
   isProcessing = false;
 }
