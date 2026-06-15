@@ -303,24 +303,35 @@ if (ON_GHPAGES) {
 //  Input Validation
 // ============================================================
 function isItInvestmentWork(text) {
-  const keywords = [
-    'it','信息技术','技术','系统','软件','硬件','网络','安全',
-    '尽调','尽职调查','itdd','风险','筛查','合规','法规',
-    '国别','行业','技术栈','架构','评估','审核','审计',
-    '数据中心','云','saas','paas','数据保护','隐私',
-    '网络安全','等保','iso','认证','灾备','业务连续性',
-    '供应商','erp','crm','plm','mes','scada','iot',
-    'it投资','it项目','信息化','数字化','数字化转型',
-    '技术尽职调查','it审计','信息安全','渗透测试','漏洞',
-    '源代码','知识产权','许可证','开源','license',
-    '投前','投前分析','投前预测','投后','并购','收购','投资','交易',
-    '法规','监管','披露','上市公司','上市地',
-    '风险分析','风险筛查','合规风险','检查清单',
-    '正大','cp group','charoen','pokphand',
-  ];
+  // AI语义分析：发送到服务器判断是否为IT投资相关工作
+  // 同步方式：尝试常见模式，不能确定时返回true（让服务器判断）
   const lower = text.toLowerCase();
-  for (const kw of keywords) { if (lower.includes(kw)) return true; }
-  return false;
+  
+  // 明显不相关的内容模式
+  const rejectPatterns = [
+    /^你好$/m, /^嗨$/m, /^hello$/mi, /^hi$/mi,
+    /你是谁/, /今天天气/, /吃饭/, /聊天/, /讲个故事/,
+    /^test$/mi, /^测试$/m, /^1$/m,
+  ];
+  for (const p of rejectPatterns) {
+    if (p.test(text)) return false;
+  }
+  
+  // 宽松匹配 — 有IT/投资/技术相关词就放过
+  const broadPatterns = [
+    /it|技术|系统|软件|硬件|网络|安全|数据/i,
+    /尽调|风险|合规|法规|审计|评估|审核/i,
+    /项目|投资|收购|并购|交易|投前|投后/i,
+    /公司|企业|集团|行业|国别|架构|架构/i,
+    /报告|分析|筛查|检查|清单|评估/i,
+    /泰国|正大/i,
+  ];
+  for (const p of broadPatterns) {
+    if (p.test(text)) return true;
+  }
+  
+  // 无法判断时默认通过（服务器端再做AI判断）
+  return true;
 }
 
 async function callAgent(text) {
