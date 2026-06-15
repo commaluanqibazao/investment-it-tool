@@ -202,9 +202,20 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: #bbb; }
+
+  .gh-banner {
+    display: none; background: #fff3e0; border-bottom: 1px solid #ffcc80;
+    padding: 10px 20px; text-align: center; font-size: 14px;
+    color: #e65100; flex-shrink: 0;
+  }
+  .gh-banner a { color: #1a8cff; font-weight: 600; }
 </style>
 </head>
 <body>
+<div class="gh-banner" id="ghBanner">
+  ⚠️ GitHub Pages 预览页 — 请使用
+  <a href="http://1.14.77.3/it/">http://1.14.77.3/it/</a> 访问完整功能
+</div>
 
 <div class="app initial" id="app">
 
@@ -276,7 +287,11 @@
 // ============================================================
 //  API endpoint — GitHub Pages 调用公网服务器
 // ============================================================
-const API_SERVER = 'http://1.14.77.3/it';
+// GitHub Pages 检测，显示跳转提示
+const ON_GHPAGES = window.location.hostname.includes('github.io');
+if (ON_GHPAGES) document.getElementById('ghBanner').style.display = 'block';
+
+const API_SERVER = ON_GHPAGES ? 'http://1.14.77.3/it' : 'http://1.14.77.3/it';
 
 // ============================================================
 //  Input Validation
